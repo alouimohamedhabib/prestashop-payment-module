@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -24,13 +25,14 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  */
 
- if(!defined('_PS_VERSION_')){
-     exit;
- }
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
- // the main class
+// the main class
 
- class MyBasicModule extends Module {
+class MyBasicModule extends Module
+{
 
     // constructor
 
@@ -51,7 +53,29 @@
 
         $this->displayName = $this->l("My very first module");
         $this->description = $this->l("This is a great testing module");
-        $this->confirmUninstall = $this->l("Are crzazy , you are going to unistall a great module");
-
+        $this->confirmUninstall = $this->l("Are crazy , you are going to unistall a great module!");
     }
- }
+
+   
+    // install method
+    public function install() 
+    {
+        return parent::install() 
+        && $this->registerHook('registerGDPRConsent') 
+        &&  $this->dbInstall();
+    }
+
+    // uninstall method
+    public function uninstall() : Bool
+    {
+        return parent::uninstall() ;
+    }
+
+    // sql install
+
+    public function dbInstall() {
+        // sql query that create certain table
+        return true;
+    }
+    
+}
