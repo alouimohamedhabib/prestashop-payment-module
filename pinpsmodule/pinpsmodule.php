@@ -48,6 +48,11 @@ class PinPsModule extends Module
         // ]);
 
         $this->context->controller->registerJavascript(
+            'api-pin',
+            'modules/' . $this->name . '/views/assets/api.js'
+        );
+        
+        $this->context->controller->registerJavascript(
             'pin-js', 'http://assets.pinterest.com/js/pinit.js',
             ['server' => 'remote']
         );
@@ -58,4 +63,12 @@ class PinPsModule extends Module
         return '<a href="https://www.pinterest.com/pin/create/button/" data-pin-do="buttonBookmark">Pintrest
         </a>';
     }
+
+    public function hookDisplayHeader($params)
+    {
+                return $this->display(__FILE__, 'views/templates/hooks/pin-header.tpl');
+
+    }
+
+
 }
