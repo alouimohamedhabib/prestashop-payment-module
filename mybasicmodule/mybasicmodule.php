@@ -79,6 +79,11 @@ class MyBasicModule extends Module
     }
     
     public function hookdisplayFooter($params){
-        return "Hello from the basic module footer hook";
+        
+        $this->context->smarty->assign([
+            'myparamtest' => "Mohamed habib ALOUI",
+            'idcart' => $this->context->cart->id
+        ]);
+        return $this->display(__FILE__, 'views/templates/hook/footer.tpl');
     }
 }
