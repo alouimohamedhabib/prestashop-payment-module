@@ -25,13 +25,15 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  */
 
+use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 
 // the main class
 
-class MyBasicModule extends Module
+class MyBasicModule extends Module implements WidgetInterface
 {
 
     // constructor
@@ -56,34 +58,50 @@ class MyBasicModule extends Module
         $this->confirmUninstall = $this->l("Are crazy , you are going to unistall a great module!");
     }
 
-   
+
     // install method
-    public function install() 
+    public function install()
     {
-        return parent::install() 
-        && $this->registerHook('registerGDPRConsent') 
-        &&  $this->dbInstall();
+        return parent::install()
+            && $this->registerHook('registerGDPRConsent')
+            &&  $this->dbInstall();
     }
 
     // uninstall method
-    public function uninstall() : Bool
+    public function uninstall(): Bool
     {
-        return parent::uninstall() ;
+        return parent::uninstall();
     }
 
     // sql install
 
-    public function dbInstall() {
+    public function dbInstall()
+    {
         // sql query that create certain table
         return true;
     }
-    
-    public function hookdisplayFooter($params){
-        
-        $this->context->smarty->assign([
-            'myparamtest' => "Mohamed habib ALOUI",
-            'idcart' => $this->context->cart->id
-        ]);
-        return $this->display(__FILE__, 'views/templates/hook/footer.tpl');
+
+    // public function hookdisplayFooter($params)
+    // {
+
+    //     $this->context->smarty->assign([
+    //         'myparamtest' => "Mohamed habib ALOUI",
+    //         'idcart' => $this->context->cart->id
+    //     ]);
+    //     return $this->display(__FILE__, 'views/templates/hook/footer.tpl');
+    // }
+
+
+    public function renderWidget($hookName, array $configuration)
+    {
+        if ($hookName === 'displayNavFullWidth') {
+            return "Hello this is an exception form the displayNavFullWidth hook";
+        }
+        return $this->fetch("module:mybasicmodule/views/templates/hook/footer.tpl");
+    }
+
+    public function getWidgetVariables($hookName, array $configuration)
+    {
+        return true;
     }
 }
