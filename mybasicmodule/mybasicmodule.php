@@ -78,4 +78,7 @@ class MyBasicModule extends Module
         return true;
     }
     
+    public function hookdisplayFooter($params){
+        return "Hello from the basic module footer hook";
+    }
 }
