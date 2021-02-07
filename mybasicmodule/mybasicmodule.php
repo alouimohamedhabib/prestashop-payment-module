@@ -36,6 +36,7 @@ if (!defined('_PS_VERSION_')) {
 class MyBasicModule extends Module implements WidgetInterface
 {
 
+    private $templateFile;
     // constructor
 
     public function __construct()
@@ -56,6 +57,7 @@ class MyBasicModule extends Module implements WidgetInterface
         $this->displayName = $this->l("My very first module");
         $this->description = $this->l("This is a great testing module");
         $this->confirmUninstall = $this->l("Are crazy , you are going to unistall a great module!");
+        $this->templateFile = "module:mybasicmodule/views/templates/hook/footer.tpl";
     }
 
 
@@ -97,11 +99,26 @@ class MyBasicModule extends Module implements WidgetInterface
         if ($hookName === 'displayNavFullWidth') {
             return "Hello this is an exception form the displayNavFullWidth hook";
         }
+        if (!$this->isCached($this->templateFile, $this->getCacheId($this->name))) {
+            $this->context->smarty->assign($this->getWidgetVariables($hookName, $configuration));
+        }
         return $this->fetch("module:mybasicmodule/views/templates/hook/footer.tpl");
     }
 
     public function getWidgetVariables($hookName, array $configuration)
     {
-        return true;
+        return [
+            'idcart' => $this->context->cart->id,
+            'myparamtest' => "Prestashop developer"
+        ];
     }
+
+    // configuration page
+
+    public function getContent()
+    {
+        return "This is the configuration page";
+    }
+
+    
 }
