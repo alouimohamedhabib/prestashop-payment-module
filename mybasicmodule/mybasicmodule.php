@@ -117,8 +117,22 @@ class MyBasicModule extends Module implements WidgetInterface
 
     public function getContent()
     {
-        return "This is the configuration page";
-    }
 
-    
+        $message = null;
+
+        if (Tools::getValue("courserating")) {
+            Configuration::updateValue('COURSE_RATING', Tools::getValue("courserating"));
+            $message = "Form saved correctly";
+        }
+
+        // field: courserating
+        $courserating = Configuration::get('COURSE_RATING');
+        $this->context->smarty->assign(
+            [
+                'courserating' => $courserating,
+                'message' => $message
+            ]
+        );
+        return $this->fetch("module:mybasicmodule/views/templates/admin/configuration.tpl");
+    }
 }
