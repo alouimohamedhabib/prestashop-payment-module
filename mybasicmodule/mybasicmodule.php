@@ -66,6 +66,7 @@ class MyBasicModule extends Module implements WidgetInterface
     {
         return parent::install()
             && $this->registerHook('registerGDPRConsent')
+            && $this->registerHook('moduleRoutes')
             &&  $this->dbInstall();
     }
 
@@ -114,25 +115,116 @@ class MyBasicModule extends Module implements WidgetInterface
     }
 
     // configuration page
+    /*
+     public function getContent()
+     {
+
+         $message = null;
+
+         if (Tools::getValue("courserating")) {
+             Configuration::updateValue('COURSE_RATING', Tools::getValue("courserating"));
+             $message = "Form saved correctly";
+         }
+
+         // field: courserating
+         $courserating = Configuration::get('COURSE_RATING');
+         $this->context->smarty->assign(
+             [
+                 'courserating' => $courserating,
+                 'message' => $message
+             ]
+         );
+         return $this->fetch("module:mybasicmodule/views/templates/admin/configuration.tpl");
+     } */
 
     public function getContent()
     {
 
-        $message = null;
+        $output = "";
+        if (Tools::isSubmit('submit' . $this->name)) {
+            $courserating = Tools::getValue('courserating');
 
-        if (Tools::getValue("courserating")) {
-            Configuration::updateValue('COURSE_RATING', Tools::getValue("courserating"));
-            $message = "Form saved correctly";
+            if ($courserating && !empty($courserating) && Validate::isGenericName($courserating)) {
+                Configuration::updateValue('COURSE_RATING', Tools::getValue("courserating"));
+                $output .= $this->displayConfirmation($this->trans('Form submitted successfully'));
+            } else {
+                $output .= $this->displayError($this->trans('Form has not been submitted successfully'));
+            }
         }
 
-        // field: courserating
-        $courserating = Configuration::get('COURSE_RATING');
-        $this->context->smarty->assign(
-            [
-                'courserating' => $courserating,
-                'message' => $message
+        return $output . $this->displayForm();
+    }
+
+    public function displayForm()
+    {
+        $defaultLang = (int) Configuration::get('PS_LANG_DEFAULT');
+
+        // form inputs
+        $fields[0]['form'] = [
+            'legend' => [
+                'title' => $this->trans('Rating setting')
+            ],
+            'input' => [
+                [
+                    'type' => 'text',
+                    'label' => $this->l('Course rating'),
+                    'name' => 'courserating',
+                    'size' => 20,
+                    'required' => true
+                ]
+            ],
+            'submit' => [
+                'title' => $this->trans('Save the rarting'),
+                'class' => 'btn btn-primary pull-right'
             ]
+        ];
+
+        // instance of the FH
+        $helper = new HelperForm();
+        $helper->module = $this;
+        $helper->name_controller = $this->name;
+        $helper->token = Tools::getAdminTokenLite('AdminModules');
+        $helper->currentIndex = AdminController::$currentIndex . '&configure=' . $this->name;
+
+        // Language
+        $helper->default_form_language = $defaultLang;
+        $helper->allow_employee_form_lang = $defaultLang;
+
+        // Title and toolbar
+        $helper->title = $this->displayName;
+        $helper->show_toolbar = true;        // false -> remove toolbar
+        $helper->toolbar_scroll = true;      // yes - > Toolbar is always visible on the top of the screen.
+        $helper->submit_action = 'submit' . $this->name;
+        $helper->toolbar_btn = [
+            'save' => [
+                'desc' => $this->l('Save'),
+                'href' => AdminController::$currentIndex . '&configure=' . $this->name . '&save' . $this->name .
+                    '&token=' . Tools::getAdminTokenLite('AdminModules'),
+            ],
+            'back' => [
+                'href' => AdminController::$currentIndex . '&token=' . Tools::getAdminTokenLite('AdminModules'),
+                'desc' => $this->l('Back to list')
+            ]
+        ];
+
+        $helper->fields_value['courserating'] = Configuration::get('COURSE_RATING');
+        return $helper->generateForm($fields);
+    }
+
+
+    public function hookModuleRoutes($params)
+    {
+        return array(
+            'test' => array(
+                'controller' => 'test',
+                'rule' => "tests",
+                'keywords' => array(),
+                'params' => array(
+                    'fc' => 'module',
+                    'module' => $this->name,
+                    'controller' => 'test',
+                )
+            )
         );
-        return $this->fetch("module:mybasicmodule/views/templates/admin/configuration.tpl");
     }
 }
