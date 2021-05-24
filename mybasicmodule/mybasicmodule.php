@@ -64,26 +64,75 @@ class MyBasicModule extends Module implements WidgetInterface
     // install method
     public function install()
     {
-        return parent::install()
-            && $this->registerHook('registerGDPRConsent')
-            && $this->registerHook('moduleRoutes')
-            &&  $this->dbInstall();
+        return
+         $this->sqlInstall()
+        && $this->installtab()
+        && parent::install()
+        && $this->registerHook('registerGDPRConsent')
+        && $this->registerHook('displayCheckoutSubtotalDetails')
+        && $this->registerHook('moduleRoutes')
+        ;
     }
 
     // uninstall method
     public function uninstall(): Bool
     {
-        return parent::uninstall();
+        return $this->sqlUninstall() && $this->uninstalltab() && parent::uninstall() ;
     }
 
-    // sql install
-
-    public function dbInstall()
+    protected function sqlInstall()
     {
-        // sql query that create certain table
-        return true;
+        // sql query to create database table
+        $sqlCreate = "CREATE TABLE IF NOT EXISTS`" . _DB_PREFIX_ .  "testcomment` (
+            `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+            `user_id` varchar(255) DEFAULT NULL,
+            `comment` varchar(255) DEFAULT NULL,
+            PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=latin1;";
+
+        return Db::getInstance()->execute($sqlCreate);
     }
 
+    // Drop database table
+    protected function sqlUninstall()
+    {
+        $sql = "DROP TABLE IF EXISTS`" . _DB_PREFIX_ . "testcomment`";
+        return Db::getInstance()->execute($sql);
+    }
+
+
+    public function installtab()
+    {  $tab = new Tab();
+        $tab->active = 1;
+        $tab->class_name = 'AdminTest';
+        $tab->name = array();
+        foreach (Language::getLanguages(true) as $lang) {
+            $tab->name[$lang['id_lang']] = 'TEST Admin controller';
+        }
+
+        $tab->id_parent = (int)Tab::getIdFromClassName('DEFAULT');
+
+        $tab->module = $this->name;
+
+        return $tab->add();
+    }
+
+    public function uninstalltab() {
+        $idTab = (int)Tab::getIdFromClassName('AdminTest');
+
+        if ($idTab) {
+            $tab = new Tab($idTab);
+            try {
+                $tab->delete();
+            } catch (Exception $e) {
+                echo $e->getMessage();
+                return false;
+            }
+        }
+        return true;
+
+
+    }
     // public function hookdisplayFooter($params)
     // {
 
@@ -97,8 +146,9 @@ class MyBasicModule extends Module implements WidgetInterface
 
     public function renderWidget($hookName, array $configuration)
     {
+        echo $this->context->link->getModuleLink($this->name, "test");
         if ($hookName === 'displayNavFullWidth') {
-            return "Hello this is an exception form the displayNavFullWidth hook";
+            return "<br />Hello this is an exception form the displayNavFullWidth hook";
         }
         if (!$this->isCached($this->templateFile, $this->getCacheId($this->name))) {
             $this->context->smarty->assign($this->getWidgetVariables($hookName, $configuration));
@@ -211,20 +261,25 @@ class MyBasicModule extends Module implements WidgetInterface
         return $helper->generateForm($fields);
     }
 
-
+    // hookModuleRoutes
     public function hookModuleRoutes($params)
     {
-        return array(
-            'test' => array(
+        return [
+            'test' => [
                 'controller' => 'test',
-                'rule' => "tests",
-                'keywords' => array(),
-                'params' => array(
-                    'fc' => 'module',
+                'rule' => "fc-test",
+                'params' => [
+                    'keywords' => ["Coool" => "Cool"],
                     'module' => $this->name,
-                    'controller' => 'test',
-                )
-            )
-        );
+                    'fc' => 'module',
+                    'controller' => 'test'
+                ]
+            ]
+        ];
+    }
+
+    public function HookDisplayCheckoutSubtotalDetails($params)
+    {
+        return;
     }
 }
