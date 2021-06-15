@@ -5,6 +5,19 @@ require_once(_PS_MODULE_DIR_ . 'mybasicmodule/classes/comment.class.php');
 class AdminTestController extends ModuleAdminController
 {
 
+    public function initContent()
+    {
+        parent::initContent();
+        $content  = $this->context->smarty->fetch(
+            _PS_MODULE_DIR_ . 'mybasicmodule/views/templates/admin/configuration.tpl'
+        );
+        $this->context->smarty->assign(
+            [
+                'content' =>   $content
+            ]
+        );
+    }
+
 
     public function  __construct()
     {
@@ -75,12 +88,12 @@ class AdminTestController extends ModuleAdminController
         $sql = new DbQuery();
         $sql->select('*')
             ->from($this->table)
-            ->where('id = '.   Tools::getValue('id'));
+            ->where('id = ' .   Tools::getValue('id'));
 
         $data = Db::getInstance()->executeS($sql);
         // assign vars
         $tpl->assign([
-           'data' => $data[0]
+            'data' => $data[0]
         ]);
         return $tpl->fetch();
     }
