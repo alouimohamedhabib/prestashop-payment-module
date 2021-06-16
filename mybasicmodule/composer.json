@@ -1,0 +1,13 @@
+{
+    "name": "mohamed/commentcontroller",
+    "description": "A controller that handle comments",
+    "autoload": {
+        "psr-4": {
+            "Mybasicmodule\\Controller\\":  "src/Controller/"
+        }
+    },
+    "config": {
+        "prepend-autoloader": false
+    },
+    "type": "prestashop-module"
+}
