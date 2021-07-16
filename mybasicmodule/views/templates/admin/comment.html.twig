@@ -1,6 +1,11 @@
 {% extends "PrestaShopBundle:Admin:layout.html.twig" %}
 {% block content %}
-lorem {{test}}
+ 
+{{app.flashes('success')}}
+{% for message in app.flashes('error500')  %}
+    <h3 class="errro500">{{message }}</h3>
+{% endfor %}
+
 {{form_start(form)}}
 
 {{form_end(form)}}
