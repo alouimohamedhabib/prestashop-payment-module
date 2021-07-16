@@ -45,15 +45,37 @@ class CommentController extends FrameworkBundleAdminController
     }
 
     public function listAction() {
-
         // get em
         $em = $this->getDoctrine()->getManager();
         $data = $em->getRepository(CommentTest::class)->findAll();
-        // $form  = $this->createForm(CommentType::class, $data);
+        
         return $this->render(
             "@Modules/mybasicmodule/views/templates/admin/listing.html.twig",
             [
                 "data" => $data
+            ]
+        );
+    }
+
+
+    public function updateAction(int $id, Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $data = $em->getRepository(CommentTest::class)->find($id);
+        $form  = $this->createForm(CommentType::class, $data);
+        // handle the submission
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->flush();
+            $this->addFlash("success" , "The form has been submitted correctly");            
+        }
+
+
+
+        return $this->render(
+            "@Modules/mybasicmodule/views/templates/admin/update.html.twig",
+            [
+                "form" => $form->createView()
             ]
         );
     }

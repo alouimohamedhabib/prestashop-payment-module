@@ -7,3 +7,7 @@ blog_list:
     path: /blog/list
     # the controller value has the format 'controller_class::method_name
     controller: Mybasicmodule\Controller\CommentController::listAction
+blog_update:
+    path: /blog/update/{id}
+    # the controller value has the format 'controller_class::method_name
+    controller: Mybasicmodule\Controller\CommentController::updateAction

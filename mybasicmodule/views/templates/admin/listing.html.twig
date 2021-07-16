@@ -17,8 +17,8 @@
       <td>{{ comment.name }}</td>
       <td class="active">{{ comment.description }}</td>
       <td>
-      <button ctype="button" class="btn btn-outline-primary">Delete </button> 
-      <button type="button" class="btn btn-outline-primary">update</button></td>
+      <button ctype="button" class="btn btn-outline-danger">Delete </button> 
+      <a href="{{ path("blog_update" , { id: comment.id }) }}" type="button" class="btn btn-outline-primary">update</a></td>
     </tr>
   {% endfor %}
     
