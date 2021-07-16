@@ -21,16 +21,14 @@ class CommentController extends FrameworkBundleAdminController
             // build the object
             $commntTest = new CommentTest();
 
-            $commntTest->setName("The name two");
-            $commntTest->setDescription("The long description");
-            $commntTest->setprice(90);
-
+            $commntTest->setName($form->get('name')->getData());
+            $commntTest->setDescription($form->get('description')->getData());
+            $commntTest->setprice($form->get('price')->getData());
 
             // persist the data
             $em->persist($commntTest);
             $em->flush();
             
-            dump($form->getData());
         }
 
         return $this->render(
