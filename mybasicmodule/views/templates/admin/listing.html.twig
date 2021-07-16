@@ -1,0 +1,28 @@
+{% extends "PrestaShopBundle:Admin:layout.html.twig" %}
+{% block content %}
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Username</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for comment in data %}
+    <tr>
+      <th scope="row">{{ comment.id }}</th>
+      <td>{{ comment.name }}</td>
+      <td class="active">{{ comment.description }}</td>
+      <td>
+      <button ctype="button" class="btn btn-outline-primary">Delete </button> 
+      <button type="button" class="btn btn-outline-primary">update</button></td>
+    </tr>
+  {% endfor %}
+    
+
+  </tbody>
+</table>
+{% endblock %}
